@@ -7,7 +7,7 @@ package org.cidarlab.citationsapi;
 
 /**
  *
- * @author prash
+ * @author innatur, prash
  */
 public class googleScholar {
     
