@@ -117,7 +117,7 @@ public class CrossRef {
         s += "journal={" + temp.getJSONArray("container-title").get(0).toString() + "}, volume={" 
                 + temp.get("volume").toString() + "}, number={"
                 + temp.get("issue").toString() + "}, pages={"
-                + temp.get("page").toString() + "}, year={"
+                + temp.get("page").toString().replace("-", "--") + "}, year={"
                 + temp.getJSONObject("published-print").getJSONArray("date-parts").getJSONArray(0).get(0).toString() + "}, publisher={"
                 + temp.get("publisher").toString() + "} }"; 
         
@@ -129,7 +129,7 @@ public class CrossRef {
     public static void main(String[] args) throws IOException {
         
         JSONObject json = new JSONObject();
-        json = readJsonFromUrl(getDoiURL("10.1109/jproc.2004.829024"));
+        json = readJsonFromUrl(getDoiURL("10.1109/aswec.2009.22"));
         
         System.out.println(convertJSONtoBibtex(json));
         

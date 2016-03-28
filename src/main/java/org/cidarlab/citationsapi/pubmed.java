@@ -99,8 +99,82 @@ public class pubmed {
         JSONObject citationSummary = new JSONObject();
         String url = getPubmedSummaryURL(dbName, id, returnType);
         citationSummary = readJsonFromUrl(url);
+        
+        String id1 = citationSummary.getJSONObject("result").getJSONArray("uids").get(0).toString();
+            
+        citationSummary = citationSummary.getJSONObject("result").getJSONObject(id1);
+        
         return citationSummary;
     }
+    
+        public static String convertJSONtoBibtex(JSONObject json) throws IOException {
+        
+       
+        String s;
+        
+        String name = json.getJSONArray("authors").getJSONObject(0).get("name").toString();
+        String date = json.get("pubdate").toString();
+        
+        String title = json.get("title").toString();
+        String title1;
+        
+        s = "@article{" + name.substring(0, name.indexOf(" ")).toLowerCase() + date.substring(0, date.indexOf(" "));
+        
+        if (title.indexOf(' ') == 1)
+        {
+            title1 = title.substring(2, title.length()).toLowerCase();
+            s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
+        }
+        else if (title.indexOf(' ') == 3)
+        {
+            title1 = title.substring(4, title.length()).toLowerCase();
+            s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
+        }
+        else
+        {
+            s += title.substring(0, title.indexOf(' ')).toLowerCase() + "}, title={";
+        }
+        
+        s += title + "}, author={";
+        int numberOfAuthors = json.getJSONArray("authors").length();
+        
+        for (int i = 0; i < numberOfAuthors; i++)
+        {
+            if (i != numberOfAuthors-1)
+                s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + " and ";
+            else
+                s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + "}, ";
+        
+        }
+        
+        String pages = json.getString("pages");
+        
+        s += "journal={" + json.getString("fulljournalname") + "}, volume={"
+                + json.getString("volume") + "}, number={"
+                + json.getString("issue") + "}, pages={"
+                + pages.substring(0, pages.indexOf('-'));
+        
+       
+        
+        if (pages.substring(pages.indexOf('-'), pages.length()).length() == 2)
+        {
+            s+= "--" + pages.substring(0, 3) + pages.substring(pages.indexOf('-') + 1, pages.length());
+        }
+        else if (pages.substring(pages.indexOf('-'), pages.length()).length() == 3)
+        {
+            s+= "--" + pages.substring(0, 2) + pages.substring(pages.indexOf('-') + 1, pages.length());
+        }
+        else
+        {
+            s+= "--" + pages.substring(pages.indexOf('-') + 1, pages.length());
+        }
+        
+        s += "}, year{" + date.substring(0, date.indexOf(" ")) + "} }"; 
+        
+        return s;
+        
+    }
+    
 
 }
 

@@ -52,8 +52,14 @@ public class pubmedTest {
             System.out.println(author);
             System.out.println("List of IDS :: ");
             List<String> ids = pubmed.getPubmedIds("pubmed", author, ReturnType.JSON);
-            System.out.println("Summary  ::\n" + pubmed.getCitationSummary("pubmed", ids.get(0), ReturnType.JSON));
-        
+            
+            JSONObject json = new JSONObject();
+            json = pubmed.getCitationSummary("pubmed", ids.get(0), ReturnType.JSON);
+            
+            System.out.println("BibTex  ::\n" + pubmed.convertJSONtoBibtex(json));
+            
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(pubmedTest.class.getName()).log(Level.SEVERE, null, ex);
         }
