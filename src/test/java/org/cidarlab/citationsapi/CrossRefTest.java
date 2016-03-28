@@ -56,10 +56,14 @@ public class CrossRefTest {
     @Test
     public void testChangeFormat() throws Exception {
         
-        String url = "http://api.crossref.org/works?filter=doi:10.1109/JPROC.2015.2443832";
+        String url = CrossRef.getDoiURL("10.1109/JPROC.2015.2443832");
         JSONObject json = new JSONObject();
         json = CrossRef.readJsonFromUrl(url);
-        System.out.println(CrossRef.changeFormat(json));
+        
+        System.out.println("Pretty print JSON :: ");
+        System.out.println(CrossRef.changeFormat(json).toString(4));
+        //System.out.println(json.toString(4)); --- for ISSN
+        
         
     }
     
