@@ -135,7 +135,7 @@ public class pubmed {
             s += title.substring(0, title.indexOf(' ')).toLowerCase() + "}, title={";
         }
         
-        s += title + "}, author={";
+        s += title.replace(".","") + "}, author={";
         int numberOfAuthors = json.getJSONArray("authors").length();
         
         for (int i = 0; i < numberOfAuthors; i++)
@@ -151,22 +151,27 @@ public class pubmed {
         
         s += "journal={" + json.getString("fulljournalname") + "}, volume={"
                 + json.getString("volume") + "}, number={"
-                + json.getString("issue") + "}, pages={"
-                + pages.substring(0, pages.indexOf('-'));
+                + json.getString("issue") + "}, pages={";
         
        
+        String page1 = pages.substring(0,pages.indexOf('-'));
+        String page2 = pages.substring(pages.indexOf('-')+1,pages.length());
         
-        if (pages.substring(pages.indexOf('-'), pages.length()).length() == 2)
+        if (page1.length() == page2.length())
         {
-            s+= "--" + pages.substring(0, 3) + pages.substring(pages.indexOf('-') + 1, pages.length());
+            s += page1 + "--" + page2;
         }
-        else if (pages.substring(pages.indexOf('-'), pages.length()).length() == 3)
+        else if (page1.length()-page2.length() == 1)
         {
-            s+= "--" + pages.substring(0, 2) + pages.substring(pages.indexOf('-') + 1, pages.length());
+            s += page1 + "--" + page1.charAt(0) + page2;
         }
-        else
+        else if (page1.length()-page2.length() == 2)
         {
-            s+= "--" + pages.substring(pages.indexOf('-') + 1, pages.length());
+            s += page1 + "--" + page1.substring(0,1) + page2;
+        }       
+        else if (page1.length()-page2.length() == 3)
+        {
+            s += page1 + "--" + page1.substring(0,2) + page2;
         }
         
         s += "}, year{" + date.substring(0, date.indexOf(" ")) + "} }"; 

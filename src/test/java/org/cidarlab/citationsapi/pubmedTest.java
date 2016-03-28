@@ -54,7 +54,7 @@ public class pubmedTest {
             List<String> ids = pubmed.getPubmedIds("pubmed", author, ReturnType.JSON);
             
             JSONObject json = new JSONObject();
-            json = pubmed.getCitationSummary("pubmed", ids.get(0), ReturnType.JSON);
+            json = pubmed.getCitationSummary("pubmed", ids.get(3), ReturnType.JSON);
             
             System.out.println("BibTex  ::\n" + pubmed.convertJSONtoBibtex(json));
             
