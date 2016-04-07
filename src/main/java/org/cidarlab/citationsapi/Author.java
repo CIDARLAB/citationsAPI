@@ -5,15 +5,26 @@
  */
 package org.cidarlab.citationsapi;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
  * @author innaturshudzhyan
  */
 public class Author {
-    //String firstname
-    //String lastname
-    //String middlename
-    //Affiliation
-    //Email
+    
+    @Getter
+    @Setter
+    private String firstname;
+    @Getter
+    @Setter
+    private String lastname;
+    @Getter
+    @Setter
+    private String middlename;
+    @Getter
+    @Setter
+    private String email;
     
 }

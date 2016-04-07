@@ -23,7 +23,7 @@ import org.json.JSONObject;
  *
  * @author innatur, prash
  */
-public class pubmed {
+public class Pubmed {
 
     public static final String QueryURL = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=";
     public static final String SummaryURL = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=";
@@ -89,8 +89,8 @@ public class pubmed {
      }*/
     private static List<String> idsFromJSON(JSONObject json) {
         List<String> ids = new ArrayList<String>();
-        for(Object obj : (JSONArray) json.getJSONObject("esearchresult").get("idlist")){
-            ids.add((String)obj);
+        for (Object obj : (JSONArray) json.getJSONObject("esearchresult").get("idlist")) {
+            ids.add((String) obj);
         }
         return ids;
     }
@@ -99,88 +99,79 @@ public class pubmed {
         JSONObject citationSummary = new JSONObject();
         String url = getPubmedSummaryURL(dbName, id, returnType);
         citationSummary = readJsonFromUrl(url);
-        
+
         String id1 = citationSummary.getJSONObject("result").getJSONArray("uids").get(0).toString();
-            
+
         citationSummary = citationSummary.getJSONObject("result").getJSONObject(id1);
-        
+
         return citationSummary;
     }
     
-        public static String convertJSONtoBibtex(JSONObject json) throws IOException {
+    
+    public static Citation convertJSONtoCitation(JSONObject json){
+        Citation citation = new Citation();
         
-       
+        
+        return citation;
+    }
+    
+    public static String convertJSONtoBibtex(JSONObject json) throws IOException {
+
         String s;
-        
+
         String name = json.getJSONArray("authors").getJSONObject(0).get("name").toString();
         String date = json.get("pubdate").toString();
-        
+
         String title = json.get("title").toString();
         String title1;
-        
+
         s = "@article{" + name.substring(0, name.indexOf(" ")).toLowerCase() + date.substring(0, date.indexOf(" "));
-        
-        if (title.indexOf(' ') == 1)
-        {
+
+        if (title.indexOf(' ') == 1) {
             title1 = title.substring(2, title.length()).toLowerCase();
             s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
-        }
-        else if (title.indexOf(' ') == 3)
-        {
+        } else if (title.indexOf(' ') == 3) {
             title1 = title.substring(4, title.length()).toLowerCase();
             s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
-        }
-        else
-        {
+        } else {
             s += title.substring(0, title.indexOf(' ')).toLowerCase() + "}, title={";
         }
-        
-        s += title.replace(".","") + "}, author={";
+
+        s += title.replace(".", "") + "}, author={";
         int numberOfAuthors = json.getJSONArray("authors").length();
-        
-        for (int i = 0; i < numberOfAuthors; i++)
-        {
-            if (i != numberOfAuthors-1)
+
+        for (int i = 0; i < numberOfAuthors; i++) {
+            if (i != numberOfAuthors - 1) {
                 s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + " and ";
-            else
+            } else {
                 s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + "}, ";
-        
+            }
+
         }
-        
+
         String pages = json.getString("pages");
-        
+
         s += "journal={" + json.getString("fulljournalname") + "}, volume={"
                 + json.getString("volume") + "}, number={"
                 + json.getString("issue") + "}, pages={";
-        
-       
-        String page1 = pages.substring(0,pages.indexOf('-'));
-        String page2 = pages.substring(pages.indexOf('-')+1,pages.length());
-        
-        if (page1.length() == page2.length())
-        {
+
+        String page1 = pages.substring(0, pages.indexOf('-'));
+        String page2 = pages.substring(pages.indexOf('-') + 1, pages.length());
+
+        if (page1.length() == page2.length()) {
             s += page1 + "--" + page2;
-        }
-        else if (page1.length()-page2.length() == 1)
-        {
+        } else if (page1.length() - page2.length() == 1) {
             s += page1 + "--" + page1.charAt(0) + page2;
+        } else if (page1.length() - page2.length() == 2) {
+            s += page1 + "--" + page1.substring(0, 1) + page2;
+        } else if (page1.length() - page2.length() == 3) {
+            s += page1 + "--" + page1.substring(0, 2) + page2;
         }
-        else if (page1.length()-page2.length() == 2)
-        {
-            s += page1 + "--" + page1.substring(0,1) + page2;
-        }       
-        else if (page1.length()-page2.length() == 3)
-        {
-            s += page1 + "--" + page1.substring(0,2) + page2;
-        }
-        
-        s += "}, year{" + date.substring(0, date.indexOf(" ")) + "} }"; 
-        
+
+        s += "}, year{" + date.substring(0, date.indexOf(" ")) + "} }";
+
         return s;
-        
+
     }
-    
 
 }
-
-

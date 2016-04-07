@@ -51,12 +51,12 @@ public class pubmedTest {
         try {
             System.out.println(author);
             System.out.println("List of IDS :: ");
-            List<String> ids = pubmed.getPubmedIds("pubmed", author, ReturnType.JSON);
+            List<String> ids = Pubmed.getPubmedIds("pubmed", author, ReturnType.JSON);
             
             JSONObject json = new JSONObject();
-            json = pubmed.getCitationSummary("pubmed", ids.get(3), ReturnType.JSON);
+            json = Pubmed.getCitationSummary("pubmed", ids.get(3), ReturnType.JSON);
             
-            System.out.println("BibTex  ::\n" + pubmed.convertJSONtoBibtex(json));
+            System.out.println("BibTex  ::\n" + Pubmed.convertJSONtoBibtex(json));
             
             
             
@@ -75,7 +75,7 @@ public class pubmedTest {
         try {
             System.out.println(author);
             System.out.println("List of IDS :: ");
-            List<String> ids = pubmed.getPubmedIds("pubmed", author, ReturnType.JSON);
+            List<String> ids = Pubmed.getPubmedIds("pubmed", author, ReturnType.JSON);
             System.out.println(ids);
             System.out.println("\n\nNumber of Ids :: " + ids.size());
         } catch (IOException ex) {

@@ -7,8 +7,20 @@ package org.cidarlab.citationsapi;
 
 /**
  *
- * @author innatur, prash
+ * @author prash
  */
-public class citations {
-    
+public enum ArticleType {
+    article,
+    book,
+    booklet,
+    conference,
+    inbook,
+    incollection,
+    manual,
+    mastersthesis,
+    misc,
+    phdthesis,
+    proceedings,
+    techreport,
+    unpublished
 }

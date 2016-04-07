@@ -14,9 +14,13 @@ import java.io.InputStreamReader;
  *
  * @author innatur, prash
  */
-public class googleScholar {
+public class GoogleScholar {
     
     public static void main(String[] args) throws IOException {
+        
+        System.out.println("File path :: "  + Utilities.getFilepath());
+        
+        /*
         Runtime rt = Runtime.getRuntime();
         
         String commandLine = "/Library/Frameworks/Python.framework/Versions/3.5/bin/python3 /Users/innaturshudzhyan/Documents/citationsAPI/scholar.py  --author \"douglas densmore\" --phrase \"a framework for genetic logic synthesis\" --citation bt";
@@ -27,9 +31,11 @@ public class googleScholar {
         String line = "";
         while( (line=br.readLine()) != null ){
             System.out.println(line);
-        }
+        }*/
     
     }
+    
+    
     
     
 }
