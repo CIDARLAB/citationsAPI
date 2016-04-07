@@ -6,9 +6,18 @@
 package org.cidarlab.citationsapi;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,23 +25,79 @@ import java.io.InputStreamReader;
  */
 public class GoogleScholar {
     
-    public static void main(String[] args) throws IOException {
-        
-        System.out.println("File path :: "  + Utilities.getFilepath());
-        
-        /*
-        Runtime rt = Runtime.getRuntime();
-        
-        String commandLine = "/Library/Frameworks/Python.framework/Versions/3.5/bin/python3 /Users/innaturshudzhyan/Documents/citationsAPI/scholar.py  --author \"douglas densmore\" --phrase \"a framework for genetic logic synthesis\" --citation bt";
-        Process pr = rt.exec(commandLine);
-        System.out.println(commandLine);
-        InputStream inStream = pr.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
-        String line = "";
-        while( (line=br.readLine()) != null ){
-            System.out.println(line);
-        }*/
+    public static String createScriptFile(){
+        String _filepath = "";
+        _filepath += Utilities.getResourcesFilepath();
+        _filepath += "script";
+        String filepath = "";
+        do{
+            filepath = _filepath + Utilities.getCounter().getAndIncrement() + ".sh";
+        }while(Utilities.validFilepath(filepath));
+        return filepath;
+    }
     
+    private static String getScriptOriginal(){
+        String _filepath = "";
+        _filepath += Utilities.getResourcesFilepath();
+        _filepath += "script.sh";
+        return _filepath;
+    }
+    public static String getBibtexFromGoogleScholar(String author, String phrase) throws IOException {
+    
+        String s="";
+        try {
+            Runtime rt = Runtime.getRuntime();
+            
+            String scriptPath = createScriptFile();
+            
+            Path source = Paths.get(getScriptOriginal());
+            Path destination = Paths.get(scriptPath);
+            try {
+                Files.copy(source, destination, COPY_ATTRIBUTES);
+            } catch (IOException ex) {
+                Logger.getLogger(GoogleScholar.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            File file = new File(scriptPath);
+            String scholarPyCommand = Utilities.getPythonLocation() + " " + Utilities.getResourcesFilepath() + "scholar.py -c 1 --author "
+                    + "\"" + author + "\"" + " --phrase " + "\"" + phrase  + "\"" + " --citation bt";
+            BufferedWriter br = new BufferedWriter(new FileWriter(file));
+            br.write("#!/bin/bash");
+            br.write("\n");
+            br.write(scholarPyCommand);
+            br.flush();
+            br.close();
+            
+            String commandLine = scriptPath;
+            Process pr = rt.exec(commandLine);
+            pr.waitFor();
+            System.out.println(commandLine);
+            InputStream inStream = pr.getInputStream();
+            BufferedReader br1 = new BufferedReader(new InputStreamReader(inStream));
+            String line = "";
+            while( (line=br1.readLine()) != null ){
+                String yearCheckVal = "year={";
+                if(line.contains(yearCheckVal)){
+                    
+                    String yearVal = line.substring(line.indexOf(yearCheckVal) + yearCheckVal.length());
+                    yearVal = yearVal.substring(0, yearVal.indexOf("}"));
+                    System.out.println("year = " + yearVal);
+                }
+                
+                s += line;
+            }
+            
+            file.deleteOnExit();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(GoogleScholar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         return s;
+    }
+        
+    public static void main(String[] args) throws IOException {
+       
+        Utilities.setPythonLocation("/usr/bin/python2.7");
+        System.out.println(getBibtexFromGoogleScholar("Prashant Vaidyanathan","A framework for genetic logic synthesis"));
+        
     }
     
     

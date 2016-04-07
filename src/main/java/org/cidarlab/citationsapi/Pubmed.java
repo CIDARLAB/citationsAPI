@@ -130,7 +130,14 @@ public class Pubmed {
         if (title.indexOf(' ') == 1) {
             title1 = title.substring(2, title.length()).toLowerCase();
             s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
-        } else if (title.indexOf(' ') == 3) {
+        }
+        if (title.indexOf(' ') == 2)
+        {
+            title1 = title.substring(3, title.length()).toLowerCase();
+            s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
+        }
+        else if (title.indexOf(' ') == 3)
+        {
             title1 = title.substring(4, title.length()).toLowerCase();
             s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
         } else {

@@ -47,7 +47,7 @@ public class pubmedTest {
     public void testGetCitationSummary(){
         List<String> author = new ArrayList<String>();
         author.add("Densmore,Douglas");
-        author.add("Bhatia,Swapnil");
+        
         try {
             System.out.println(author);
             System.out.println("List of IDS :: ");

@@ -8,6 +8,7 @@ package org.cidarlab.citationsapi;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
@@ -19,10 +20,18 @@ import lombok.Setter;
  */
 public class Utilities {
     
+    @Getter
+    @Setter
+    private static AtomicInteger counter = new AtomicInteger(0);
     
     @Getter
     @Setter
     private static String pythonLocation;
+    
+    public static boolean validFilepath(String filepath){
+        File file = new File(filepath);
+        return file.exists();
+    }
     
     public static String getFilepath(){
         
@@ -58,7 +67,22 @@ public class Utilities {
                 _filepath = _filepath.substring(0, _filepath.lastIndexOf("/build/classes/"));
             }
         }
-       
+        if(isWindows()){
+            _filepath += "\\";
+        }else{
+            _filepath += "/";
+        }
+        
+        return _filepath;
+    }
+    
+    public static String getResourcesFilepath(){
+        String _filepath = getFilepath();
+        if(isWindows()){
+            _filepath += "resources\\";
+        }else{
+            _filepath += "resources/";
+        }
         return _filepath;
     }
     
