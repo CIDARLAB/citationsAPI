@@ -47,14 +47,14 @@ public class pubmedTest {
     public void testGetCitationSummary(){
         List<String> author = new ArrayList<String>();
         author.add("Densmore,Douglas");
-        author.add("Bhatia,Swapnil");
+        
         try {
             System.out.println(author);
             System.out.println("List of IDS :: ");
             List<String> ids = pubmed.getPubmedIds("pubmed", author, ReturnType.JSON);
             
             JSONObject json = new JSONObject();
-            json = pubmed.getCitationSummary("pubmed", ids.get(3), ReturnType.JSON);
+            json = pubmed.getCitationSummary("pubmed", ids.get(0), ReturnType.JSON);
             
             System.out.println("BibTex  ::\n" + pubmed.convertJSONtoBibtex(json));
             
