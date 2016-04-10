@@ -95,7 +95,7 @@ public class GoogleScholar {
         
     public static void main(String[] args) throws IOException {
        
-        Utilities.setPythonLocation("/usr/bin/python2.7");
+        Utilities.setPythonLocation("/Library/Frameworks/Python.framework/Versions/2.7/bin/python");
         System.out.println(getBibtexFromGoogleScholar("Prashant Vaidyanathan","A framework for genetic logic synthesis"));
         
     }

@@ -14,6 +14,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import static org.cidarlab.citationsapi.CrossRef.getPhagebookCitation;
 import org.json.JSONArray;
 
 import org.json.JSONException;
@@ -117,68 +118,169 @@ public class Pubmed {
     
     public static String convertJSONtoBibtex(JSONObject json) throws IOException {
 
-        String s;
-
-        String name = json.getJSONArray("authors").getJSONObject(0).get("name").toString();
-        String date = json.get("pubdate").toString();
-
-        String title = json.get("title").toString();
-        String title1;
-
-        s = "@article{" + name.substring(0, name.indexOf(" ")).toLowerCase() + date.substring(0, date.indexOf(" "));
-
-        if (title.indexOf(' ') == 1) {
-            title1 = title.substring(2, title.length()).toLowerCase();
-            s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
-        }
-        if (title.indexOf(' ') == 2)
+        String s = "";
+        String name = "";
+        String date = "";
+        String title = "";
+        String title1 = "";
+        String pages = "";
+        String page1 = "";
+        String page2 = "";
+        int numberOfAuthors;
+        
+        if (json.has("authors") && json.has("pubdate"))
         {
-            title1 = title.substring(3, title.length()).toLowerCase();
-            s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
+            name = json.getJSONArray("authors").getJSONObject(0).get("name").toString();
+            date = json.get("pubdate").toString();
+            s = "@article{" + name.substring(0, name.indexOf(" ")).toLowerCase() + date.substring(0, date.indexOf(" "));
         }
-        else if (title.indexOf(' ') == 3)
-        {
-            title1 = title.substring(4, title.length()).toLowerCase();
-            s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
-        } else {
-            s += title.substring(0, title.indexOf(' ')).toLowerCase() + "}, title={";
-        }
-
-        s += title.replace(".", "") + "}, author={";
-        int numberOfAuthors = json.getJSONArray("authors").length();
-
-        for (int i = 0; i < numberOfAuthors; i++) {
-            if (i != numberOfAuthors - 1) {
-                s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + " and ";
-            } else {
-                s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + "}, ";
+            
+        if (json.has("title")) {
+            
+            title = json.get("title").toString();
+            
+            if (title.indexOf(' ') == 1) {
+                title1 = title.substring(2, title.length()).toLowerCase();
+                s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
             }
-
+            if (title.indexOf(' ') == 2) {
+                title1 = title.substring(3, title.length()).toLowerCase();
+                s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
+            } else if (title.indexOf(' ') == 3) {
+                title1 = title.substring(4, title.length()).toLowerCase();
+                s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
+            } else {
+                s += title.substring(0, title.indexOf(' ')).toLowerCase() + "}, title={";
+            }
+            s += title.replace(".", "");
         }
 
-        String pages = json.getString("pages");
+        s += "}, author={";
+        
+        if (json.has("authors")) {
+            numberOfAuthors = json.getJSONArray("authors").length();
 
-        s += "journal={" + json.getString("fulljournalname") + "}, volume={"
-                + json.getString("volume") + "}, number={"
-                + json.getString("issue") + "}, pages={";
+            for (int i = 0; i < numberOfAuthors; i++) {
+                if (i != numberOfAuthors - 1) {
+                    s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + " and ";
+                } else {
+                    s = s + json.getJSONArray("authors").getJSONObject(i).get("name").toString().replace(" ", ",") + "}, ";
+                }
 
-        String page1 = pages.substring(0, pages.indexOf('-'));
-        String page2 = pages.substring(pages.indexOf('-') + 1, pages.length());
-
-        if (page1.length() == page2.length()) {
-            s += page1 + "--" + page2;
-        } else if (page1.length() - page2.length() == 1) {
-            s += page1 + "--" + page1.charAt(0) + page2;
-        } else if (page1.length() - page2.length() == 2) {
-            s += page1 + "--" + page1.substring(0, 1) + page2;
-        } else if (page1.length() - page2.length() == 3) {
-            s += page1 + "--" + page1.substring(0, 2) + page2;
+            }
         }
+        
+        if (json.has("fulljournalname") && json.has("volume") && json.has("issue"))
+        {
+            s += "journal={" + json.getString("fulljournalname") + "}, volume={"
+            + json.getString("volume") + "}, number={"
+            + json.getString("issue") + "}, pages={";
+        }
+        
 
-        s += "}, year{" + date.substring(0, date.indexOf(" ")) + "} }";
+        if (json.has("pages")) {
+            pages = json.getString("pages");
+            page1 = pages.substring(0, pages.indexOf('-'));
+            page2 = pages.substring(pages.indexOf('-') + 1, pages.length());
 
+            if (page1.length() == page2.length()) {
+                s += page1 + "--" + page2;
+            } else if (page1.length() - page2.length() == 1) {
+                s += page1 + "--" + page1.charAt(0) + page2;
+            } else if (page1.length() - page2.length() == 2) {
+                s += page1 + "--" + page1.substring(0, 1) + page2;
+            } else if (page1.length() - page2.length() == 3) {
+                s += page1 + "--" + page1.substring(0, 2) + page2;
+            }
+        }
+        
+        if (json.has("pubdate"))
+        {
+            date = json.get("pubdate").toString();
+            s += "}, year{" + date.substring(0, date.indexOf(" ")) + "} }";
+        }
+        
         return s;
 
     }
+    
+    public static PhagebookCitation getPhagebookCitation(String id) throws IOException{
+        String url = SummaryURL + "pubmed&id=" + id + "&retmode=" + ReturnType.JSON;
+        
+        JSONObject pub = readJsonFromUrl(url);
+        String title = "";
+        String authors = "";
+        String year1 = "";
+        int year2 = 0;
+        String other = "";
+        String bibtex = "";
+        String pages = "";
+        String page1 = "";
+        String page2 = "";
+        int numberOfAuthors;
+        
+        if(pub.has("result"))
+        pub = pub.getJSONObject("result").getJSONObject(id);
+        
+        
+        if(pub.has("title"))
+        title = pub.get("title").toString();
+        
+        if (pub.has("authors"))
+        {
+            numberOfAuthors = pub.getJSONArray("authors").length();
+            authors = "";
+            for (int i = 0; i < numberOfAuthors; i++) {
+                if (i != numberOfAuthors - 1) {
+                    authors += pub.getJSONArray("authors").getJSONObject(i).get("name").toString() + ", ";
+                } else {
+                    authors += pub.getJSONArray("authors").getJSONObject(i).get("name").toString();
+                }
+            }
+        }
+        if (pub.has("pubdate"))
+        {
+            year1 = pub.get("pubdate").toString();
+            year1 = year1.substring(0,year1.indexOf(" "));
+            year2 = Integer.parseInt(year1);
+        }
+        if (pub.has("fulljournalname") && pub.has("volume") && pub.has("issue"))
+        {
+            other += pub.getString("fulljournalname") + ", "
+            + pub.getString("volume") + ", "
+            + pub.getString("issue") + ", ";
+        }
+        
+
+        if (pub.has("pages")) {
+            pages = pub.getString("pages");
+            page1 = pages.substring(0, pages.indexOf('-'));
+            page2 = pages.substring(pages.indexOf('-') + 1, pages.length());
+
+            if (page1.length() == page2.length()) {
+                other += page1 + "--" + page2;
+            } else if (page1.length() - page2.length() == 1) {
+                other += page1 + "--" + page1.charAt(0) + page2;
+            } else if (page1.length() - page2.length() == 2) {
+                other += page1 + "--" + page1.substring(0, 1) + page2;
+            } else if (page1.length() - page2.length() == 3) {
+                other += page1 + "--" + page1.substring(0, 2) + page2;
+            }
+        }
+        bibtex = convertJSONtoBibtex(pub);
+        
+        return new PhagebookCitation(title,authors,year2,other,bibtex);
+        
+        
+    }
+    
+    public static void main(String[] args) throws IOException {
+
+        String url = SummaryURL + "pubmed&id=" + "15496466" + "&retmode=" + ReturnType.JSON;
+        System.out.println(getPhagebookCitation("15496466").getTitle());
+        
+    }
+
+    
 
 }

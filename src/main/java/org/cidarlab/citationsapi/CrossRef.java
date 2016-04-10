@@ -68,8 +68,56 @@ public class CrossRef {
     public static Citation convertJSONtoCitation(JSONObject json){
         Citation citation = new Citation();
         
-        
         return citation;
+    }
+    
+    public static PhagebookCitation getPhagebookCitation(String doi) throws IOException{
+        
+        
+        JSONObject json = new JSONObject();
+        json = readJsonFromUrl(getDoiURL(doi));
+        
+        JSONObject temp = new JSONObject();
+        temp = changeFormat(json);
+        
+        String title = temp.getJSONArray("title").get(0).toString();
+        
+        String authors = "";
+        
+        int numberOfAuthors = temp.getJSONArray("author").length();
+        
+        for (int i = 0; i < numberOfAuthors; i++) {
+            if (i != numberOfAuthors - 1) {
+                authors = authors + temp.getJSONArray("author").getJSONObject(i).get("family").toString() + ", "
+                        + temp.getJSONArray("author").getJSONObject(i).get("given").toString() + " and ";
+            } else {
+                authors += temp.getJSONArray("author").getJSONObject(i).get("family").toString() + ", "
+                        + temp.getJSONArray("author").getJSONObject(i).get("given").toString();
+            }
+        }
+        
+        int year = (int)temp.getJSONObject("issued").getJSONArray("date-parts").getJSONArray(0).get(0);
+        
+        String s = "";
+        
+        if(temp.getJSONArray("container-title").get(0) != null)
+            s += temp.getJSONArray("container-title").get(0).toString() + ", ";
+        
+        if(temp.has("volume"))
+            s += temp.get("volume").toString() + ", ";
+        
+        if(temp.has("issue"))
+            s += temp.get("issue").toString() + ", "; 
+        
+        if(temp.has("issued"))
+            s += temp.getJSONObject("issued").getJSONArray("date-parts").getJSONArray(0).get(0).toString() + ", ";
+        
+        if(temp.has("publisher"))
+            s += temp.get("publisher").toString(); 
+
+        String bibtex = convertJSONtoBibtex(json);
+        
+        return new PhagebookCitation(title,authors,year,s,bibtex);
     }
     
     public static String convertJSONtoBibtex(JSONObject json) throws IOException {
@@ -107,27 +155,40 @@ public class CrossRef {
                         + temp.getJSONArray("author").getJSONObject(i).get("given").toString() + "}, ";
             }
         }
-
-        s += "journal={" + temp.getJSONArray("container-title").get(0).toString() + "}, volume={"
-                + temp.get("volume").toString() + "}, number={"
-                + temp.get("issue").toString() + "}, pages={"
-                + temp.get("page").toString().replace("-", "--") + "}, year={"
-                + temp.getJSONObject("published-print").getJSONArray("date-parts").getJSONArray(0).get(0).toString() + "}, publisher={"
-                + temp.get("publisher").toString() + "} }";
-
+        
+        if(temp.getJSONArray("container-title").get(0) != null)
+        {
+            s += "journal={" + temp.getJSONArray("container-title").get(0).toString() + "}, ";
+        }
+        if(temp.has("volume"))
+        {
+            s += "volume={"+ temp.get("volume").toString() + "}, ";
+        }
+        if(temp.has("issue"))
+        {
+            s += "number={"+ temp.get("issue").toString() + "}, "; 
+        }
+        if(temp.has("issued"))
+        {
+            s += "year={" + temp.getJSONObject("issued").getJSONArray("date-parts").getJSONArray(0).get(0).toString() + "}, ";
+        }
+        if(temp.has("publisher"))
+        {
+            s += "publisher={"+ temp.get("publisher").toString() + "}"; 
+        }
+        s += "}";
+        
         return s;
 
     }
 
     public static void main(String[] args) throws IOException {
 
-        JSONObject json = new JSONObject();
-        json = readJsonFromUrl(getDoiURL("10.1109/aswec.2009.22"));
-
-        System.out.println(convertJSONtoBibtex(json));
-
+        PhagebookCitation p = getPhagebookCitation("10.1093/nar/gkq165 ");
+        
+        System.out.println(p.getYear());
+        
     }
 
 }
 
-//function to convert to bibtex
