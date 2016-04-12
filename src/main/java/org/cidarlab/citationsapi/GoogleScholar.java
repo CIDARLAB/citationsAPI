@@ -31,7 +31,7 @@ public class GoogleScholar {
         _filepath += "script";
         String filepath = "";
         do{
-            filepath = _filepath + Utilities.getCounter().getAndIncrement() + ".sh";
+            filepath = _filepath + Utilities.getCount().getAndIncrement() + ".sh";
         }while(Utilities.validFilepath(filepath));
         return filepath;
     }
@@ -58,7 +58,7 @@ public class GoogleScholar {
                 Logger.getLogger(GoogleScholar.class.getName()).log(Level.SEVERE, null, ex);
             }
             File file = new File(scriptPath);
-            String scholarPyCommand = Utilities.getPythonLocation() + " " + Utilities.getResourcesFilepath() + "scholar.py -c 1 --author "
+            String scholarPyCommand = Utilities.getPyLocation() + " " + Utilities.getResourcesFilepath() + "scholar.py -c 1 --author "
                     + "\"" + author + "\"" + " --phrase " + "\"" + phrase  + "\"" + " --citation bt";
             BufferedWriter br = new BufferedWriter(new FileWriter(file));
             br.write("#!/bin/bash");
@@ -95,7 +95,7 @@ public class GoogleScholar {
         
     public static void main(String[] args) throws IOException {
        
-        Utilities.setPythonLocation("/Library/Frameworks/Python.framework/Versions/2.7/bin/python");
+        Utilities.setPyLocation("/Library/Frameworks/Python.framework/Versions/2.7/bin/python");
         System.out.println(getBibtexFromGoogleScholar("Prashant Vaidyanathan","A framework for genetic logic synthesis"));
         
     }

@@ -22,11 +22,11 @@ public class Utilities {
     
     @Getter
     @Setter
-    private static AtomicInteger counter = new AtomicInteger(0);
+    private static AtomicInteger count = new AtomicInteger(0);
     
     @Getter
     @Setter
-    private static String pythonLocation;
+    private static String pyLocation;
     
     public static boolean validFilepath(String filepath){
         File file = new File(filepath);

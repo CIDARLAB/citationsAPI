@@ -150,7 +150,10 @@ public class Pubmed {
                 title1 = title.substring(4, title.length()).toLowerCase();
                 s += title1.substring(0, title1.indexOf(' ')) + "}, title={";
             } else {
-                s += title.substring(0, title.indexOf(' ')).toLowerCase() + "}, title={";
+                if (title.replace(" ", "") == title)
+                    s += title.substring(0, title.length()) + "}, title={";
+                else
+                    s += title.substring(0, title.indexOf(' ')).toLowerCase() + "}, title={";
             }
             s += title.replace(".", "");
         }
@@ -178,7 +181,7 @@ public class Pubmed {
         }
         
 
-        if (json.has("pages")) {
+        if (json.has("pages") && json.get("pages")!="") {
             pages = json.getString("pages");
             page1 = pages.substring(0, pages.indexOf('-'));
             page2 = pages.substring(pages.indexOf('-') + 1, pages.length());
@@ -252,7 +255,7 @@ public class Pubmed {
         }
         
 
-        if (pub.has("pages")) {
+        if (pub.has("pages") && pub.get("pages")!="") {
             pages = pub.getString("pages");
             page1 = pages.substring(0, pages.indexOf('-'));
             page2 = pages.substring(pages.indexOf('-') + 1, pages.length());
@@ -276,8 +279,10 @@ public class Pubmed {
     
     public static void main(String[] args) throws IOException {
 
-        String url = SummaryURL + "pubmed&id=" + "15496466" + "&retmode=" + ReturnType.JSON;
-        System.out.println(getPhagebookCitation("15496466").getTitle());
+        String id = "15496466";
+        
+        String url = SummaryURL + "pubmed&id=" + id + "&retmode=" + ReturnType.JSON;
+        //System.out.println(getPhagebookCitation(id).getTitle());
         
     }
 

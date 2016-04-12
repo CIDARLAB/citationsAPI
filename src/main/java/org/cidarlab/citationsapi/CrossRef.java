@@ -88,11 +88,11 @@ public class CrossRef {
         
         for (int i = 0; i < numberOfAuthors; i++) {
             if (i != numberOfAuthors - 1) {
-                authors = authors + temp.getJSONArray("author").getJSONObject(i).get("family").toString() + ", "
-                        + temp.getJSONArray("author").getJSONObject(i).get("given").toString() + " and ";
+                authors = authors + temp.getJSONArray("author").getJSONObject(i).get("given").toString() + " "
+                        + temp.getJSONArray("author").getJSONObject(i).get("family").toString() + ", ";
             } else {
-                authors += temp.getJSONArray("author").getJSONObject(i).get("family").toString() + ", "
-                        + temp.getJSONArray("author").getJSONObject(i).get("given").toString();
+                authors += temp.getJSONArray("author").getJSONObject(i).get("given").toString() + " "
+                        + temp.getJSONArray("author").getJSONObject(i).get("family").toString();
             }
         }
         
@@ -136,11 +136,18 @@ public class CrossRef {
         if (word.indexOf(' ') == 1) {
             word = word.substring(2, word.length());
             s += word.substring(0, word.indexOf(' ')) + "}, title={";
-        } else if (temp.getJSONArray("title").get(0).toString().indexOf(' ') == 3) {
+        } else if(temp.getJSONArray("title").get(0).toString().indexOf(' ') == 2) {
+            word = word.substring(3, word.length());
+            s += word.substring(0, word.indexOf(' ')) + "}, title={";
+        }
+        else if (temp.getJSONArray("title").get(0).toString().indexOf(' ') == 3) {
             word = word.substring(4, word.length());
             s += word.substring(0, word.indexOf(' ')) + "}, title={";
         } else {
-            s += word.substring(0, word.indexOf(' ')) + "}, title={";
+            if (word.replace(" ", "") == word)
+                s += word.substring(0, word.length()) + "}, title={";
+            else
+                s += word.substring(0, word.indexOf(' ')) + "}, title={";
         }
 
         s += temp.getJSONArray("title").get(0).toString() + "}, author={";
@@ -186,7 +193,7 @@ public class CrossRef {
 
         PhagebookCitation p = getPhagebookCitation("10.1093/nar/gkq165 ");
         
-        System.out.println(p.getYear());
+        //System.out.println(p.getYear());
         
     }
 

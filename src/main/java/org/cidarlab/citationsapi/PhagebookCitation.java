@@ -6,27 +6,31 @@
 package org.cidarlab.citationsapi;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author innaturshudzhyan
  */
 public class PhagebookCitation {
+    @Getter @Setter private String id;
     
-    @Getter
-    public String title;
+    @Getter @Setter private String user;
     
-    @Getter
-    public String authors;
+    @Getter @Setter
+    private String title;
     
-    @Getter
-    public int year;
+    @Getter @Setter
+    private String authors;
     
-    @Getter
-    public String otherInformation;
+    @Getter @Setter
+    private int year;
     
-    @Getter
-    public String bibtex;
+    @Getter @Setter
+    private String otherInformation;
+    
+    @Getter @Setter
+    private String bibtex;
     
     public PhagebookCitation(String _title, String _authors, int _year, String _otherInfo, String _bibtex){
         this.title = _title;
@@ -34,6 +38,17 @@ public class PhagebookCitation {
         this.year = _year;
         this.otherInformation = _otherInfo;
         this.bibtex = _bibtex;
+        this.id = "Not Set";
+    }
+    
+    public PhagebookCitation(){
+        this.title ="Not Set";
+        this.authors = "Not Set";
+        this.year = 1970;
+        this.otherInformation = "Not Set";
+        this.bibtex = "Not Set";
+        this.id = "Not Set";
+        this.user="Not Set";
     }
     
 }
